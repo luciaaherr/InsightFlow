@@ -1,14 +1,6 @@
 import pandas as pd
+import requests
 import streamlit as st
-
-from backend.services.analysis_service import generate_insights
-from backend.services.business_insights_service import (
-    generate_business_insights,
-)
-from backend.services.kpi_service import generate_dashboard_kpis
-from backend.services.statistics_service import (
-    generate_column_statistics,
-)
 
 from visualizations import (
     create_bar_chart,
@@ -30,8 +22,12 @@ st.sidebar.markdown("---")
 
 st.sidebar.write("### Proyecto")
 st.sidebar.success("Portfolio MVP")
-st.sidebar.write("Versión 0.8")
-st.sidebar.write("Stack: Python · Pandas · Plotly · Streamlit")
+st.sidebar.write("Versión 1.0")
+
+st.sidebar.write(
+    "Stack: Python · FastAPI · Pandas · Plotly · Streamlit"
+)
+
 st.sidebar.markdown("---")
 
 uploaded_file = st.sidebar.file_uploader(
@@ -40,13 +36,15 @@ uploaded_file = st.sidebar.file_uploader(
 )
 
 st.title("📊 InsightFlow")
-st.markdown("### Turn raw CSV files into business insights")
+
+st.markdown(
+    "### Turn raw CSV files into business insights"
+)
 
 st.write(
-    "InsightFlow es una herramienta interactiva que transforma archivos CSV "
-    "en métricas, visualizaciones e insights automáticos. "
-    "Está pensada para explorar datos de negocio de forma rápida, "
-    "clara y sin necesidad de conocimientos técnicos."
+    "InsightFlow es una herramienta interactiva que transforma "
+    "archivos CSV en métricas, visualizaciones e insights "
+    "automáticos."
 )
 
 st.caption(
@@ -61,9 +59,23 @@ if uploaded_file is not None:
     st.success("CSV cargado correctamente.")
 
     numeric_columns = get_numeric_columns(df)
+
     categorical_columns = get_categorical_columns(df)
 
-    dashboard_kpis = generate_dashboard_kpis(df)
+    response = requests.post(
+        "http://127.0.0.1:8000/datasets/insights",
+        files={
+            "file": (
+                uploaded_file.name,
+                uploaded_file.getvalue(),
+                "text/csv",
+            )
+        },
+    )
+
+    response_data = response.json()
+
+    insights = response_data["insights"]
 
     tab_dashboard, tab_insights, tab_visualizations, tab_raw_data = st.tabs(
         [
@@ -77,47 +89,17 @@ if uploaded_file is not None:
     with tab_dashboard:
         st.write("## Resumen ejecutivo")
 
-        kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+        kpi1, kpi2 = st.columns(2)
 
         kpi1.metric(
             "Filas",
-            dashboard_kpis["rows"],
+            df.shape[0],
         )
 
         kpi2.metric(
             "Columnas",
-            dashboard_kpis["columns"],
+            df.shape[1],
         )
-
-        if dashboard_kpis["total_sales"] is not None:
-            kpi3.metric(
-                "Total ventas",
-                dashboard_kpis["total_sales"],
-            )
-
-        else:
-            kpi3.metric(
-                "Columnas numéricas",
-                dashboard_kpis["numeric_columns_count"],
-            )
-
-        if dashboard_kpis["estimated_profit"] is not None:
-            kpi4.metric(
-                "Ganancia estimada",
-                dashboard_kpis["estimated_profit"],
-            )
-
-        elif dashboard_kpis["average_satisfaction"] is not None:
-            kpi4.metric(
-                "Satisfacción promedio",
-                dashboard_kpis["average_satisfaction"],
-            )
-
-        else:
-            kpi4.metric(
-                "Columnas categóricas",
-                dashboard_kpis["categorical_columns_count"],
-            )
 
         st.write("## Vista previa")
 
@@ -149,61 +131,34 @@ if uploaded_file is not None:
     with tab_insights:
         st.write("## Insights automáticos")
 
-        insights = generate_insights(df)
-
         for insight in insights:
             st.write(f"• {insight}")
-
-        st.write("## Lectura de negocio")
-
-        business_insights = generate_business_insights(df)
-
-        for business_insight in business_insights:
-            if business_insight["type"] == "info":
-                st.info(
-                    business_insight["message"]
-                )
-
-            elif business_insight["type"] == "success":
-                st.success(
-                    business_insight["message"]
-                )
-
-            else:
-                st.write(
-                    business_insight["message"]
-                )
 
     with tab_visualizations:
         st.write("## Visualizaciones inteligentes")
 
         if numeric_columns:
             selected_numeric = st.selectbox(
-                "Elegí una columna numérica para ver su distribución",
+                "Elegí una columna numérica",
                 numeric_columns,
                 key="hist_numeric",
             )
 
             metric1, metric2, metric3 = st.columns(3)
 
-            column_statistics = generate_column_statistics(
-                df,
-                selected_numeric,
-            )
-
             metric1.metric(
                 "Promedio",
-                column_statistics["average"],
+                round(df[selected_numeric].mean(), 2),
             )
 
             metric2.metric(
                 "Mínimo",
-                column_statistics["minimum"],
+                round(df[selected_numeric].min(), 2),
             )
 
             metric3.metric(
                 "Máximo",
-                column_statistics["maximum"],
+                round(df[selected_numeric].max(), 2),
             )
 
             visual_histogram = create_histogram(
@@ -214,12 +169,12 @@ if uploaded_file is not None:
             st.plotly_chart(
                 visual_histogram,
                 use_container_width=True,
-                key="visualization_histogram",
+                key="visual_histogram",
             )
 
         if categorical_columns:
             selected_category = st.selectbox(
-                "Elegí una columna categórica para analizar frecuencia",
+                "Elegí una columna categórica",
                 categorical_columns,
                 key="bar_category",
             )
@@ -232,11 +187,11 @@ if uploaded_file is not None:
             st.plotly_chart(
                 bar_chart,
                 use_container_width=True,
-                key="category_bar_chart",
+                key="bar_chart",
             )
 
         if len(numeric_columns) >= 2:
-            st.write("### Relación entre variables numéricas")
+            st.write("### Relación entre variables")
 
             x_column = st.selectbox(
                 "Variable X",
@@ -261,7 +216,7 @@ if uploaded_file is not None:
             st.plotly_chart(
                 scatter,
                 use_container_width=True,
-                key="numeric_scatter_plot",
+                key="scatter_plot",
             )
 
         if not numeric_columns and not categorical_columns:
@@ -271,14 +226,6 @@ if uploaded_file is not None:
 
     with tab_raw_data:
         st.write("## Datos originales")
-
-        st.write("### Columnas detectadas")
-
-        st.write(
-            list(df.columns)
-        )
-
-        st.write("### Dataset completo")
 
         st.dataframe(
             df,
