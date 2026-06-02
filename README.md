@@ -30,23 +30,22 @@ Features
 * Statistical summaries
 * Automatic categorical and numerical column detection
 * Modular project structure
+* Frontend and backend architecture preparation
 
 ⸻
 
 Technologies Used
 
+Frontend
+
+* Streamlit
+* Plotly
+
 Backend / Logic
 
 * Python
 * Pandas
-
-Visualization
-
-* Plotly
-
-Web Application
-
-* Streamlit
+* FastAPI (architecture setup)
 
 Development Tools
 
@@ -62,11 +61,31 @@ Deployment
 Project Structure
 
 InsightFlow/
-├── app.py
-├── analysis.py
-├── visualizations.py
-├── requirements.txt
-└── .gitignore
+├── frontend/
+│   ├── app.py
+│   ├── analysis.py
+│   ├── visualizations.py
+│   └── requirements.txt
+│
+├── backend/
+│   ├── main.py
+│   ├── database.py
+│   │
+│   ├── routes/
+│   │   ├── auth.py
+│   │   ├── datasets.py
+│   │   └── users.py
+│   │
+│   ├── models/
+│   │   ├── dataset.py
+│   │   └── user.py
+│   │
+│   └── services/
+│       └── analysis_service.py
+│
+├── README.md
+├── .gitignore
+└── venv/
 
 ⸻
 
@@ -82,7 +101,7 @@ cd InsightFlow
 
 Create virtual environment
 
-python -m venv venv
+python3 -m venv venv
 
 Activate virtual environment
 
@@ -96,22 +115,24 @@ venv\Scripts\activate
 
 Install dependencies
 
-pip install -r requirements.txt
+pip install -r frontend/requirements.txt
 
-Run application
+Run frontend application
 
-streamlit run app.py
+streamlit run frontend/app.py
 
 ⸻
 
 Future Improvements
 
-* SQL database integration
-* FastAPI backend
-* User authentication
+* PostgreSQL database integration
+* Full FastAPI backend implementation
+* User authentication with JWT
 * Persistent dataset storage
-* REST API integration
-* Advanced analytics
+* REST API endpoints
+* Advanced analytics engine
+* Docker support
+* Cloud backend deployment
 
 ⸻
 
