@@ -20,6 +20,22 @@ https://insightflow-luciaaherr.streamlit.app/
 
 ⸻
 
+Deployment Notice
+
+The project architecture was recently upgraded to include:
+
+* FastAPI backend
+* PostgreSQL integration
+* SQLAlchemy ORM
+* Persistent dataset history
+
+The previous Streamlit-only cloud deployment is currently being adapted to the new full-stack architecture.
+
+At the moment, the complete version of the project runs locally while cloud deployment migration is in progress.
+
+
+⸻
+
 GitHub Repository
 
 https://github.com/luciaaherr/InsightFlow
