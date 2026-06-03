@@ -1,18 +1,24 @@
 InsightFlow
 
-InsightFlow is an interactive data analytics web application built with Python and Streamlit.
+InsightFlow is an interactive data analytics platform built with Python, Streamlit, FastAPI, and PostgreSQL.
 
 The application allows users to upload CSV datasets and automatically generate:
 
 * business insights,
 * KPIs,
-* interactive visualizations,
 * statistical summaries,
+* interactive visualizations,
 * exploratory data analysis.
+
+The project uses a modular frontend/backend architecture with REST API communication and persistent dataset storage using PostgreSQL.
+
+⸻
 
 Live Demo
 
 https://insightflow-luciaaherr.streamlit.app/
+
+⸻
 
 GitHub Repository
 
@@ -28,9 +34,14 @@ Features
 * Interactive Plotly visualizations
 * Missing values detection
 * Statistical summaries
-* Automatic categorical and numerical column detection
+* Automatic numerical and categorical column detection
+* FastAPI backend architecture
+* PostgreSQL database integration
+* Persistent dataset history
+* REST API endpoints
+* Swagger API documentation
 * Modular project structure
-* Frontend and backend architecture preparation
+* Frontend/backend separation
 
 ⸻
 
@@ -41,20 +52,37 @@ Frontend
 * Streamlit
 * Plotly
 
-Backend / Logic
+Backend
 
+* FastAPI
+* SQLAlchemy
+* PostgreSQL
 * Python
 * Pandas
-* FastAPI (architecture setup)
 
 Development Tools
 
 * Git
 * GitHub
+* Python Virtual Environment (venv)
 
 Deployment
 
 * Streamlit Community Cloud
+
+⸻
+
+Project Architecture
+
+Frontend (Streamlit)
+        ↓
+REST API Requests
+        ↓
+Backend (FastAPI)
+        ↓
+SQLAlchemy ORM
+        ↓
+PostgreSQL Database
 
 ⸻
 
@@ -72,20 +100,42 @@ InsightFlow/
 │   ├── database.py
 │   │
 │   ├── routes/
-│   │   ├── auth.py
 │   │   ├── datasets.py
-│   │   └── users.py
+│   │   ├── kpis.py
+│   │   ├── statistics.py
+│   │   └── business_insights.py
 │   │
 │   ├── models/
 │   │   ├── dataset.py
 │   │   └── user.py
 │   │
 │   └── services/
-│       └── analysis_service.py
+│       ├── analysis_service.py
+│       ├── kpi_service.py
+│       ├── statistics_service.py
+│       └── business_insight_service.py
 │
+├── requirements.txt
 ├── README.md
 ├── .gitignore
-└── venv/
+└── .env
+
+⸻
+
+Current API Endpoints
+
+Datasets
+
+* POST /datasets/insights
+* GET /datasets/history
+
+KPIs
+
+* POST /datasets/kpis
+
+Statistics
+
+* POST /datasets/statistics
 
 ⸻
 
@@ -105,34 +155,57 @@ python3 -m venv venv
 
 Activate virtual environment
 
-Mac/Linux:
+Mac/Linux
 
 source venv/bin/activate
 
-Windows:
+Windows
 
 venv\Scripts\activate
 
 Install dependencies
 
-pip install -r frontend/requirements.txt
+pip install -r requirements.txt
 
-Run frontend application
+⸻
 
-streamlit run frontend/app.py
+PostgreSQL Setup
+
+Install PostgreSQL locally and create the database:
+
+CREATE DATABASE insightflow_db;
+
+The backend uses SQLAlchemy ORM to connect to PostgreSQL and store uploaded dataset metadata.
+
+⸻
+
+Run Backend
+
+./venv/bin/python -m uvicorn backend.main:app --reload
+
+Backend documentation:
+
+http://127.0.0.1:8000/docs
+
+⸻
+
+Run Frontend
+
+./venv/bin/python -m streamlit run frontend/app.py
 
 ⸻
 
 Future Improvements
 
-* PostgreSQL database integration
-* Full FastAPI backend implementation
 * User authentication with JWT
-* Persistent dataset storage
-* REST API endpoints
-* Advanced analytics engine
+* Multi-user dataset management
+* Cloud PostgreSQL deployment
 * Docker support
-* Cloud backend deployment
+* Advanced analytics engine
+* Export reports to PDF
+* Dataset dashboards
+* AI-generated insights
+* Background processing system
 
 ⸻
 

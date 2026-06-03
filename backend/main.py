@@ -1,5 +1,10 @@
 from fastapi import FastAPI
 
+from backend.database import Base
+from backend.database import engine
+
+from backend.models.dataset import Dataset
+
 from backend.routes.datasets import (
     router as datasets_router,
 )
@@ -16,10 +21,14 @@ from backend.routes.business_insights import (
     router as business_insights_router,
 )
 
+Base.metadata.create_all(
+    bind=engine,
+)
+
 app = FastAPI(
     title="InsightFlow API",
     description="Backend API for InsightFlow",
-    version="0.3.0",
+    version="0.4.0",
 )
 
 app.include_router(
