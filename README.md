@@ -119,7 +119,6 @@ InsightFlow/
 ├── README.md
 ├── .gitignore
 └── .env
-
 ⸻
 
 Current API Endpoints
